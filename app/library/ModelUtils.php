@@ -17,8 +17,13 @@ class ModelUtils {
 	 * @return Tarif tarif actuel de $disque
 	 */
 	public static function getDisqueTarif($disque){
-		//TODO 4.1
-		return null;
+		$tarifId = DisqueTarif::findFirst(
+			array(
+				"idDisque = ".$disque,
+				"order" => "startDate DESC"
+			));
+		$tarif = Tarif::findFirst($tarifId);
+		return $tarif;
 	}
 
 	/**
