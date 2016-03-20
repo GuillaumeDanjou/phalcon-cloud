@@ -11,25 +11,25 @@
 				//TODO 4.3 implémenter à partir de DisqueController/indexAction
 				-->
 
-				Nom : <div id="nomDisque"><h4>{{ nomDisque }}</h4></div><input id="inputNom" style="display: none" type="text"/> <button id="modifier" class="btn btn-info">Modifier</button> <button id="modifier2" style="display: none" class="btn btn-info">Modifier</button>
+				Nom : <div id="nomDisque"><h4><?php echo $nomDisque; ?></h4></div><input id="inputNom" style="display: none" type="text"/> <button id="modifier" class="btn btn-info">Modifier</button> <button id="modifier2" style="display: none" class="btn btn-info">Modifier</button>
 				</br></br>
-				<h4>Propriétaire : {{ proprietaire }}</h4>
+				<h4>Propriétaire : <?php echo $proprietaire; ?></h4>
 				</br></br>
-				<h4>Occupation : {{ occupation }}</h4>
+				<h4>Occupation : <?php echo $occupation; ?></h4>
 				</br></br>
-				Tarification : <div id="nomTarif"><h4>{{ tarification }}</h4></div>
+				Tarification : <div id="nomTarif"><h4><?php echo $tarification; ?></h4></div>
 
 				<button id="modifiertarif" class="btn btn-info">Modifier</button> <button id="modifiertarif2" style="display: none" class="btn btn-info">Modifier</button>
 				<select id="listeTarif" style="display: none">
-					{% for index, tarif in listeTarification %}
-						<option value="{{ index+1 }}">{{ tarif }}</option>
-					{% endfor %}
+					<?php foreach ($listeTarification as $index => $tarif) { ?>
+						<option value="<?php echo $index + 1; ?>"><?php echo $tarif; ?></option>
+					<?php } ?>
 				</select>
 				</br></br>
 				<h4>Services : </h4>
-				{% for index, service in services %}
-				<span class="badge">{{ service }}</span>
-				{% endfor %}
+				<?php foreach ($services as $index => $service) { ?>
+				<span class="badge"><?php echo $service; ?></span>
+				<?php } ?>
 			</div>
 			<div role="tabpanel" class="tab-pane" id="Listing">
 				<div class="btn-toolbar">
@@ -113,11 +113,11 @@
 <!--
 	//TODO 4.3 .btClose bouton de fermeture
  -->
-{{ javascript_include("js/jquery-file-upload/jquery.knob.js") }}
+<?php echo $this->tag->javascriptInclude('js/jquery-file-upload/jquery.knob.js'); ?>
 <!-- jQuery File Upload Dependencies -->
-{{ javascript_include("js/jquery-file-upload/jquery.ui.widget.js") }}
-{{ javascript_include("js/jquery-file-upload/jquery.iframe-transport.js") }}
-{{ javascript_include("js/jquery-file-upload/jquery.fileupload.js") }}
+<?php echo $this->tag->javascriptInclude('js/jquery-file-upload/jquery.ui.widget.js'); ?>
+<?php echo $this->tag->javascriptInclude('js/jquery-file-upload/jquery.iframe-transport.js'); ?>
+<?php echo $this->tag->javascriptInclude('js/jquery-file-upload/jquery.fileupload.js'); ?>
 
-{{ javascript_include("js/jquery-file-upload/script.js") }}
-{{ script_foot }}
+<?php echo $this->tag->javascriptInclude('js/jquery-file-upload/script.js'); ?>
+<?php echo $script_foot; ?>

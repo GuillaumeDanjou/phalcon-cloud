@@ -16,11 +16,6 @@ class IndexController extends ControllerBase
 
     	$this->jquery->getOnClick("a.btn, button.btn","","#content",array("attr"=>"data-ajax"));
     	$this->jquery->compile($this->view);
-		$tarif  = ModelUtils::getDisqueTarif(1);
-		$this->view->setVar(
-			"tarif",
-			$tarif
-		);
     }
 }
 

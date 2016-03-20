@@ -19,9 +19,9 @@ class ModelUtils {
 	public static function getDisqueTarif($disque){
 		$tarifId = DisqueTarif::findFirst(
 			array(
-				"idDisque = ".$disque,
+				"idDisque" => $disque->getId(),
 				"order" => "startDate DESC"
-			));
+			))->getIdTarif();
 		$tarif = Tarif::findFirst($tarifId);
 		return $tarif;
 	}

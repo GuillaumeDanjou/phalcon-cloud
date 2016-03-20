@@ -8,7 +8,72 @@ class ScanController extends ControllerBase {
 	 */
 	public function indexAction($idDisque) {
 		//TODO 4.3
-		$diskName="nom du disque.......................";
+		$diskName = Disque::findFirst($idDisque)->getNom();
+		$proprietaire = Auth::getUser($this);
+		$cloud = $this->config->cloud;
+		$disque = Disque::findFirst($idDisque);
+		$idTarif = DisqueTarif::findFirst($disque->getId())->getIdTarif();
+		$occupationEnOctet = ModelUtils::getDisqueOccupation($cloud,$disque);
+		$uniteOccupation = ModelUtils::sizeConverter(Tarif::findFirst($idTarif)->getUnite());
+		$occupation = round($occupationEnOctet/$uniteOccupation, 2);
+		$quota = Tarif::findFirst($idTarif)->getQuota();
+		$unite = Tarif::findFirst($idTarif)->getUnite();
+		$pourcentage = round($occupation/$quota*100,2);
+
+		$occupation = $occupation.' '.$unite.' ('.$pourcentage.' %) sur '.$quota.' '.$unite;
+		$tarification = ModelUtils::getDisqueTarif($disque);
+		$services = array();
+		$idservices = DisqueService::find(array("idDisque = ".$idDisque));
+		foreach($idservices as $idservice){
+			array_push($services,Service::findFirst($idservice->getIdService())->getNom());
+		}
+		$listeTarification = Tarif::find();
+		$this->view->setVars(array(
+			"nomDisque" => $diskName,
+			"proprietaire" => $proprietaire,
+			"occupation" =>$occupation,
+			"tarification" =>$tarification,
+			"services" => $services,
+			"listeTarification" => $listeTarification
+		));
+
+		$this->jquery->click("#modifier",'
+			$("#nomDisque").toggle();
+			$("#inputNom").toggle();
+			$(this).toggle();
+			$("#modifier2").toggle();
+		');
+
+		$this->jquery->click("#modifier2",'
+			$("#nomDisque").toggle();
+			$("#inputNom").toggle();
+			$(this).toggle();
+			$("#modifier").toggle();
+			var nom = $("#inputNom").val();
+			$.post( "../modifier/'.$idDisque.'",({nom:nom}), function( data ) {
+				$( "#nomDisque" ).empty();
+  				$( "#nomDisque" ).html( data );
+			});
+		');
+
+		$this->jquery->click("#modifiertarif",'
+			$("#nomTarif").toggle();
+			$("#listeTarif").toggle();
+			$(this).toggle();
+			$("#modifiertarif2").toggle();
+		');
+
+		$this->jquery->click("#modifiertarif2",'
+			$("#nomTarif").toggle();
+			$("#listeTarif").toggle();
+			$(this).toggle();
+			$("#modifiertarif").toggle();
+			var tarif = $("#listeTarif").val();
+			$.post( "../modifierTarif/'.$idDisque.'",({tarif:tarif}), function( data ) {
+				$( "#nomTarif" ).empty();
+  				$( "#nomTarif" ).html( data );
+			});
+		');
 
 
 		$this->jquery->execOn("click", "#ckSelectAll", "$('.toDelete').prop('checked', $(this).prop('checked'));$('#btDelete').toggle($('.toDelete:checked').length>0)");
@@ -18,6 +83,9 @@ class ScanController extends ControllerBase {
 		$this->jquery->doJQueryOn("click", "#btFrmCreateFolder", "#panelCreateFolder", "toggle");
 		$this->jquery->postFormOn("click", "#btCreateFolder", "Scan/createFolder", "frmCreateFolder","#ajaxResponse");
 		$this->jquery->exec("window.location.hash='';scan('".$diskName."')",true);
+		$b=$this->jquery->bootstrap()->htmlModal("boite2");
+		$b->renderContent($this->view,"aController","anAction");
+		$b->addOkayButton();
 
 		$this->jquery->compile($this->view);
 	}
@@ -26,6 +94,18 @@ class ScanController extends ControllerBase {
 	 * Etablit le listing au format JSON du contenu d'un disque
 	 * @param string $dir Disque dont le contenu est à lister
 	 */
+
+	public function modifierAction($id){
+		echo"<h4>". $_POST['nom']."</h4>";
+		Disque::findFirst($id)->setNom($_POST['nom'])->save();
+	}
+
+	public function modifierTarifAction($id){
+
+		DisqueTarif::findFirst(array("idDisque" => $id))->setIdTarif($_POST['tarif'])->save();
+		echo"<h4>". ModelUtils::getDisqueTarif(Disque::findFirst($id))."</h4>".$id.$_POST['tarif'];
+		}
+
 	public function filesAction($dir="Datas"){
 		$this->view->disable();
 		$cloud=$this->config->cloud;
